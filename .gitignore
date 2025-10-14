@@ -6,3 +6,4 @@ riderModule.iml
 .idea
 *.db*
 appsettings.*.json
+data/
