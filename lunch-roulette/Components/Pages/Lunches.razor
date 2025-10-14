@@ -1,0 +1,67 @@
+﻿@page "/lunches"
+@rendermode InteractiveServer
+@inject ILunchService LunchService
+
+<PageTitle>Lunches</PageTitle>
+
+<h1>Lunches</h1>
+
+
+@if (_lunches.Count == 0)
+{
+    <p>
+        <em>No lunches found</em>
+    </p>
+}
+
+<InputDate @bind-Value="_date"/>
+<button class="btn-primary" @onclick="GenerateGroups">Add Lunch</button>
+
+<h2>Last Lunches</h2>
+
+<button class="btn-error" @onclick="DeleteLunches">Reset Lunches</button>
+
+@foreach (var lunch in _lunches)
+{
+    <p>@lunch.Date</p>
+    @foreach (var group in lunch.Groups)
+    {
+        <div class="mb-5">
+            @foreach (var person in group.Persons)
+            {
+                <span class="badge bg-secondary me-1">@person.Name</span>
+            }
+        </div>
+    }
+}
+
+@code {
+
+    private DateTime _date;
+
+    private List<Lunch> _lunches = [];
+
+    protected override void OnInitialized()
+    {
+        LoadLunches();
+
+        base.OnInitialized();
+    }
+
+    private void LoadLunches() => 
+        _lunches = LunchService.GetLunches();
+
+    private void GenerateGroups()
+    {
+        LunchService.CreateLunch(_date);
+        
+        LoadLunches();
+    }
+    
+    private void DeleteLunches()
+    {
+        LunchService.ResetLunches();
+        LoadLunches();
+    }
+
+}
