@@ -1,4 +1,5 @@
-﻿namespace lunch_roulette.models;
+﻿
+using lunch_roulette.models;
 
 public class Lunch
 {
@@ -6,5 +7,5 @@ public class Lunch
     public DateTime Date { get; set; }
     
     // Navigation properties
-    public List<Person>? Persons { get; set; }
+    public List<Group> Groups { get; set; } = [];
 }
