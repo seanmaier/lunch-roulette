@@ -1,11 +1,16 @@
-﻿namespace lunch_roulette.models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace lunch_roulette.models;
 
 public class Person
 {
     public int Id { get; set; }
-    public string Name { get; set; }
-    public string Department { get; set; }
-    public string JobTitle { get; set; }
+    [Required, StringLength(100)]
+    public string Name { get; set; } = string.Empty;
+    [Required, StringLength(100)]
+    public string Department { get; set; } = string.Empty;
+    [Required, StringLength(100)]
+    public string JobTitle { get; set; } = string.Empty;
     
     // Navigation properties
     public List<Lunch>? Lunches { get; set; }
