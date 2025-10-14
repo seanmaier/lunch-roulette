@@ -22,6 +22,7 @@ else
 }
 
 builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<ILunchService, LunchService>();
 
 var app = builder.Build();
 
