@@ -1,7 +1,7 @@
 @page "/persons"
 @using lunch_roulette.models
-@inject AppDbContext Db;
 @rendermode InteractiveServer
+@inject IPersonService PersonService;
 
 <PageTitle>Persons</PageTitle>
 
@@ -98,14 +98,13 @@
 
     private void LoadPersons()
     {
-        _persons = Db.Persons.ToList();
+        _persons = PersonService.GetPersons();
     }
 
     private void AddPerson()
     {
         Console.WriteLine("EditPerson called");
-        Db.Persons.Add(_newPerson);
-        Db.SaveChanges();
+        PersonService.CreatePerson(_newPerson);
         
         _newPerson = new Person(); // Reset form
         LoadPersons(); // For larger scale just remove person from list instead
@@ -118,16 +117,16 @@
 
     private void UpdatePerson()
     {
-        Db.Persons.Update(_editingPerson);
-        Db.SaveChanges();
+        if (_editingPerson == null) return;
+        
+        PersonService.UpdatePerson(_editingPerson);
 
         _editingPerson = null;
     }
 
     private void DeletePerson(Person person)
     {
-        Db.Persons.Remove(person);
-        Db.SaveChanges();
+        PersonService.DeletePerson(person.Id);
         LoadPersons();
     }
 
