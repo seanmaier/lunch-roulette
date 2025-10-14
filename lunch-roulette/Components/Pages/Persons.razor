@@ -1,0 +1,143 @@
+@page "/persons"
+@using lunch_roulette.models
+@inject AppDbContext Db;
+@rendermode InteractiveServer
+
+<PageTitle>Persons</PageTitle>
+
+<h1>Persons</h1>
+
+<div style="margin-bottom: 4rem">
+    <h5>Add new Person</h5>
+    <div style="display:flex; gap:10px; margin-bottom:10px">
+        <input @bind="_newPerson.Name" placeholder="Name" class="form-control mb-2"/>
+        <input @bind="_newPerson.Department" placeholder="Department" class="form-control mb-2"/>
+        <input @bind="_newPerson.JobTitle" placeholder="Job Title" class="form-control mb-2"/>
+    </div>
+    <button class="btn-primary" @onclick="AddPerson" disabled="@IsAddPersonDisabled">Add Person</button>
+</div>
+
+@if (_persons.Count == 0)
+{
+    <p>
+        <em>No persons found</em>
+    </p>   
+}
+
+<table class="personsTable mb-3">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Department</th>
+        <th>Job Title</th>
+        <th style="width:150px;">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var person in _persons)
+    {
+        <tr>
+            @if (_editingPerson == person && _editingPerson != null)
+            {
+                <td>
+                    <InputText @bind-Value="_editingPerson.Name" class="form-control"/>
+                </td>
+                <td>
+                    <InputText @bind-Value="_editingPerson.Department" class="form-control"/>
+                </td>
+                <td>
+                    <InputText @bind-Value="_editingPerson.JobTitle" class="form-control"/>
+                </td>
+            }
+            else
+            {
+                <td>
+                    @person.Name
+                </td>
+                <td>
+                    @person.Department
+                </td>
+
+                <td>
+                    @person.JobTitle
+                </td>
+            }
+            <td>
+
+            </td>
+            <td>
+                @if (_editingPerson == person)
+                {
+                    <button class="btn-success" @onclick="UpdatePerson">Save</button>
+                    <button class="btn-error" @onclick="CancelEdit">Cancel</button>
+                }
+                else
+                {
+                    <button class="btn-primary" @onclick="() => EditPerson(person)">Edit</button>
+                    <button class="btn-error" @onclick="() => DeletePerson(person)">Delete</button>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code
+{
+    private List<Person> _persons = [];
+    private Person _newPerson = new();
+
+    private Person? _editingPerson;
+
+    protected override void OnInitialized()
+    {
+        LoadPersons();
+
+        base.OnInitialized();
+    }
+
+    private void LoadPersons()
+    {
+        _persons = Db.Persons.ToList();
+    }
+
+    private void AddPerson()
+    {
+        Console.WriteLine("EditPerson called");
+        Db.Persons.Add(_newPerson);
+        Db.SaveChanges();
+        
+        _newPerson = new Person(); // Reset form
+        LoadPersons(); // For larger scale just remove person from list instead
+    }
+
+    private void EditPerson(Person person)
+    {
+        _editingPerson = person;
+    }
+
+    private void UpdatePerson()
+    {
+        Db.Persons.Update(_editingPerson);
+        Db.SaveChanges();
+
+        _editingPerson = null;
+    }
+
+    private void DeletePerson(Person person)
+    {
+        Db.Persons.Remove(person);
+        Db.SaveChanges();
+        LoadPersons();
+    }
+
+    private void CancelEdit()
+    {
+        _editingPerson = null;
+    }
+
+    private bool IsAddPersonDisabled =>
+        string.IsNullOrWhiteSpace(_newPerson.Name) ||
+        string.IsNullOrWhiteSpace(_newPerson.Department) ||
+        string.IsNullOrWhiteSpace(_newPerson.JobTitle);
+}
