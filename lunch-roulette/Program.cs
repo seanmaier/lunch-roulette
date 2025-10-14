@@ -21,6 +21,8 @@ else
 
 }
 
+builder.Services.AddScoped<IPersonService, PersonService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
