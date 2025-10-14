@@ -1,10 +1,25 @@
+using lunch_roulette;
 using lunch_roulette.Components;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDbContextFactory<AppDbContext>(opt =>
+        opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+            .EnableSensitiveDataLogging());
+}
+else
+{
+    builder.Services.AddDbContextFactory<AppDbContext>(opt =>
+        opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+}
 
 var app = builder.Build();
 
@@ -16,12 +31,17 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+    AppDbSeeder.SeedFromCsv(db, "./testData.csv");
+}
 
 app.Run();
