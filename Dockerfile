@@ -7,11 +7,10 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["lunch-roulette/lunch-roulette.csproj", "lunch-roulette/"]
-RUN dotnet restore "lunch-roulette/lunch-roulette.csproj"
-COPY . .
-WORKDIR "/src/lunch-roulette"
-RUN dotnet build "./lunch-roulette.csproj" -c $BUILD_CONFIGURATION -o /app/build
+COPY ["lunch-roulette/lunch-roulette.csproj", "."]
+RUN dotnet restore "lunch-roulette.csproj"
+COPY /lunch-roulette .
+RUN dotnet build "lunch-roulette.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
