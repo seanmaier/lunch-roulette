@@ -26,9 +26,44 @@ public class LunchService(AppDbContext context) : ILunchService
         var groups = new List<List<Person>>(); // Final list of groups
         while (unassigned.Count > 0)
         {
+            if (unassigned.Count == 3)
+            {
+                var lastGroup = new List<Person>(unassigned);
+                groups.Add(lastGroup);
+                unassigned.Clear();
+            }
+
+            var personA = unassigned.First();
+            unassigned.Remove(personA);
+
+            var possiblePairings = unassigned // Get all unassigned persons that are different from personA
+                .OrderBy(p => pairCounts.GetValueOrDefault(GetPairKey(personA.Id, p.Id), 0)) // Order by the number of times they have been paired
+                .ToList();
+
+            var partner = possiblePairings.First();
+            unassigned.Remove(partner);
+
+            var group = new List<Person> { personA, partner };
+            groups.Add(group);
         }
 
-        var lunch = new Lunch { Date = date };
+        var lunch = new Lunch { Date = date }; // Setup lunch
+
+        foreach (var group in groups) // Fill lunch with groups
+        {
+            var lunchGroup = new Group { Lunch = lunch };
+            foreach (var person in group) // Fill groups with persons
+            {
+                lunchGroup.Members.Add(new GroupMembers { Person = person });
+            }
+
+            lunch.Groups.Add(lunchGroup);
+        }
+
+        context.Lunches.Add(lunch);
+        context.SaveChanges();
+
+        return lunch;
     }
 
     private Dictionary<string, int> GetKeyPairCount()
