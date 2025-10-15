@@ -6,6 +6,9 @@ public static class AppDbSeeder
 {
     public static void SeedFromCsv(AppDbContext context, string csvFilePath)
     {
+        if (!File.Exists(csvFilePath))
+            throw new FileNotFoundException("File not found", csvFilePath);
+        
         var personsFromCsv = new List<Person>();
         
         using var reader = new StreamReader(csvFilePath);
