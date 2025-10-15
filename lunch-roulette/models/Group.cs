@@ -9,5 +9,5 @@ public class Group
     
     // Navigation properties
     public Lunch Lunch { get; set; }
-    public List<Person> Persons { get; set; } = [];
+    public List<GroupMembers> Members { get; set; } = [];
 }
