@@ -27,9 +27,9 @@
     @foreach (var group in lunch.Groups)
     {
         <div class="mb-5">
-            @foreach (var person in group.Persons)
+            @foreach (var member in group.Members)
             {
-                <span class="badge bg-secondary me-1">@person.Name</span>
+                <span class="badge bg-secondary me-1">@member.Person.Name</span>
             }
         </div>
     }
