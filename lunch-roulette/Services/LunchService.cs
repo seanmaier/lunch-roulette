@@ -31,6 +31,7 @@ public class LunchService(AppDbContext context) : ILunchService
                 var lastGroup = new List<Person>(unassigned);
                 groups.Add(lastGroup);
                 unassigned.Clear();
+                break;
             }
 
             var personA = unassigned.First();
