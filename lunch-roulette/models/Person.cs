@@ -13,5 +13,5 @@ public class Person
     public string JobTitle { get; set; } = string.Empty;
     
     // Navigation properties
-    public List<Group>? Lunches { get; set; }
+    public List<GroupMembers>? Members { get; set; }
 }
