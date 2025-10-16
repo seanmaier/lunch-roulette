@@ -34,7 +34,7 @@ public class LunchService(AppDbContext context) : ILunchService
                 break;
             }
 
-            var personA = unassigned.First();
+            var personA = unassigned.First(); // Choose the first person, but could be randomized
             unassigned.Remove(personA);
 
             var possiblePairings = unassigned // Get all unassigned persons that are different from personA
@@ -50,6 +50,7 @@ public class LunchService(AppDbContext context) : ILunchService
 
         var lunch = new Lunch { Date = date }; // Setup lunch
 
+        // Nested loops are for mapping the 2D List of groups to the EF Core Lunch Model
         foreach (var group in groups) // Fill lunch with groups
         {
             var lunchGroup = new Group { Lunch = lunch };
