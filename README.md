@@ -4,6 +4,39 @@ Diese App macht das Mittagessen mit den Kollegen amüsanter,
 indem die Gruppen so durchgemischt werden, 
 dass man selten mit derselben Person zu Mittag geht.
 
+# Setup
+
+Um das Projekt zu starten, müssen erst einmal, 
+die Dependencies im `lunch-roulette/` Ordner wiederhergestellt werden.
+```bash
+dotnet restore
+```
+
+Wenn es noch keine Datenbank gibt, 
+weil keine Migrationen unter `/lunch-roulette/Migrations/` vorhanden sind,
+müssen diese erst einmal erstellt werden.
+
+```bash
+dotnet ef migrations add InitCreate
+```
+Daraufhin, muss die Datenbank aktualisiert werden.
+
+```bash
+dotnet ef database update
+```
+
+Die Verbindung wird aktuell via der `appsettings.Development.json` Datei im Bereich `ConnectionsStrings:DefaultConnection` gesetzt.
+Diese ist standardmäßig auf `Data Source=app.db` gesetzt.
+
+Final muss das Projekt nur noch ausgeführt werden.
+
+```bash
+cd ./lunch-roulettte/ # Falls noch nicht im Projekt Verzeichnis
+dotnet run
+# oder
+dotnet watch # Wenn Hot Module Reload aktiviert sein sol 
+```
+
 # Architektur
 Die Architektur besteht Aus einer Datenbank, einer Service-Schicht für interne Logik und dem Frontend,
 welches die Daten von der Service-Schicht erhält. Diese Services werden mithilfe von Dependency Injection geladen.
