@@ -5,7 +5,9 @@ indem die Gruppen so durchgemischt werden,
 dass man selten mit derselben Person zu Mittag geht.
 
 # Setup
+Das Setup zum entwickeln wird als erstes erläutert. Daraufhin wie die App mit Docker funktioniert.
 
+## Dev environment
 Um das Projekt zu starten, müssen erst einmal, 
 die Dependencies im `lunch-roulette/` Ordner wiederhergestellt werden.
 ```bash
@@ -35,6 +37,21 @@ cd ./lunch-roulettte/ # Falls noch nicht im Projekt Verzeichnis
 dotnet run
 # oder
 dotnet watch # Wenn Hot Module Reload aktiviert sein sol 
+```
+
+## Docker
+Um das Projekt mit Docker aufzusetzen, muss Docker installiert sein.
+
+Das Image muss erst einmal aus dem Projektursprung gebaut werden.
+
+```bash
+docker build . -t lunch-roulette
+```
+
+Um es nun zu starten:
+
+```bash
+docker run -p 8080:8080 lunch-roulette
 ```
 
 # Architektur
@@ -71,13 +88,32 @@ PersonService stellt simple CRUD Operationen zur Verfügung, um Nutzer bearbeite
 
 LunchService ist für das Bereitstellen und erstellen der Lunches da.
 Ein Lunch wird kalkuliert, sodass dieselben Personenkombinationen vermieden werden.
-Dabei wird ein Dictionary verwendet, um die möglichen Personenkombinationen herauszufinden.
+Ein Dictionary wird genutzt, um die möglichen Personenkombinationen herauszufinden.
 Dabei wird ein String, der eine Kombination aus beiden Namen ist, als Key verwendet und die Anzahl,
 wie häufig sich diese beiden Personen bereits getroffen haben, als Integerwert gespeichert.
+Eine `unassinged` Liste mit Personen, wird zum prüfen genutzt. Solange diese nicht leer ist, werden Personen weiter zugeordnet.
 
 
 ## Gedanken
-Ich habe Üsprünglich mit Date, string Kombinationen arbeiten wollen um Komplexität vermeiden zu wollen.
+Vier Tabellen für Lunches zu erstellen scheint mir zu Beginn zwar richtig, jedoch etwas komplex, wenn es um die Queries geht.
+Um unnötige Komplexität zu Anfang zu vermeiden, will ich erst einmal testen, die Daten nur mithilfe von Lunch und Group Tabellen zu speichern.
+Die Gruppen werden denn als JSON string in der Gruppentabelle gespeichert. Später dann werde ich eine Matrix oder dergleichen
+verwenden, um Normalisierungen anzuwenden, mithilfe ich dann die EF Core Queries ausreizen kann.
 
-```mermaid
-```
+Wenn Nutzer gelöscht werden, sollen diese dann in der Historie erhalten bleiben? 
+Wie soll das funktionieren, wenn der Eintrag mit dem Namen gelöscht wurde?
+
+Der Algorithmus ist aktuell eingeschränkt darauf, die letzten drei Einträge einfach zusammenzufügen.
+Man könnte für die ungerade Person ebenfalls noch kalkulieren, welche Personen diese am wenigsten getroffen haben.
+
+## Zeitaufwand
+
+| Schritt           | Zeit | Beschreibung                                                                          |
+|-------------------|------|---------------------------------------------------------------------------------------|
+| Technik           | 1    | Blazor generell verstehen und spezifisch Blazor Server. Mit SignalR auseinandersetzen |
+| Frontend bauen    | 3    | Ein paar wenigste Styles einbauen und UI Library anwenden                             |
+| Datenbank         | 2    | Datenbankmodell aufbauen und reevaluieren                                             |
+| Lunch Algorithmus | 8    | Lunch Algorithmus entwerfen und implementieren                                        |
+| Dockerfile        | 1,5  | Dockerfile schreiben und debuggen                                                     | 
+| Serilog           | 0,5  | Serilog einrichten                                                                    |
+| Gesamt            | 16   |                                                                                       |
