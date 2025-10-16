@@ -1,4 +1,5 @@
 ﻿@page "/lunches"
+@using BlazorBootstrap
 @rendermode InteractiveServer
 @inject ILunchService LunchService
 
@@ -14,6 +15,7 @@
     </p>
 }
 
+
 <InputDate @bind-Value="_date"/>
 <button class="btn-primary" @onclick="GenerateGroups">Add Lunch</button>
 
@@ -21,19 +23,27 @@
 
 <button class="btn-error" @onclick="DeleteLunches">Reset Lunches</button>
 
-@foreach (var lunch in _lunches)
-{
-    <p>@lunch.Date</p>
-    @foreach (var group in lunch.Groups)
+<Accordion>
+    @foreach (var lunch in _lunches)
     {
-        <div class="mb-5">
-            @foreach (var member in group.Members)
-            {
-                <span class="badge bg-secondary me-1">@member.Person.Name</span>
-            }
-        </div>
+        <AccordionItem Title="@lunch.Date.ToString("dd.MM.yyyy")">
+
+            <Content>
+
+                @foreach (var group in lunch.Groups)
+                {
+                    int color = 145 + group.GetHashCode() % 700;
+                    <div class="d-flex flex-wrap m-3">
+                        @foreach (var member in group.Members)
+                        {
+                            <span class="badge me-1" style="background-color: hsl(@color, 70%, 30%)">@member.Person.Name</span>
+                        }
+                    </div>
+                }
+            </Content>
+        </AccordionItem>
     }
-}
+</Accordion>
 
 @code {
 
@@ -48,16 +58,16 @@
         base.OnInitialized();
     }
 
-    private void LoadLunches() => 
+    private void LoadLunches() =>
         _lunches = LunchService.GetLunches();
 
     private void GenerateGroups()
     {
         LunchService.CreateLunch(_date);
-        
+
         LoadLunches();
     }
-    
+
     private void DeleteLunches()
     {
         LunchService.ResetLunches();
