@@ -1,12 +1,25 @@
 using lunch_roulette;
 using lunch_roulette.Components;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .Enrich.FromLogContext()
+    .WriteTo.File("Logs/log-.txt",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 7,
+        restrictedToMinimumLevel: LogEventLevel.Information)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -18,7 +31,6 @@ else
 {
     builder.Services.AddDbContextFactory<AppDbContext>(opt =>
         opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 }
 
 builder.Services.AddScoped<IPersonService, PersonService>();
